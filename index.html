@@ -111,11 +111,16 @@
   details { color: var(--muted); font-size: 0.92rem; }
   summary { cursor: pointer; color: var(--ink); font-weight: 600; }
   code { font-size: 0.95em; }
+  .math { overflow-x: auto; overflow-y: hidden; color: var(--ink); font-size: 1.05rem; }
   @media (max-width: 480px) {
     .row { grid-template-columns: 1fr; gap: 0.35rem; }
     .value { text-align: left; }
   }
 </style>
+<script>
+  window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
 </head>
 <body>
 <main>
@@ -157,10 +162,14 @@
   <section class="panel">
     <details>
       <summary>How these are calculated</summary>
-      <p>Monthly savings = annual income × savings rate ÷ 12</p>
-      <p>Ending balance = monthly savings × [(1 + r/12)<sup>12t</sup> − 1] ÷ (r/12), where r is the annual return as a decimal and t is the number of years.</p>
-      <p>Total contributed = monthly savings × 12 × years</p>
-      <p>Interest earned = ending balance − total contributed</p>
+      <p>Monthly savings:</p>
+      <p class="math">\[ P = \frac{\text{annual income} \times \text{savings rate}}{12} \]</p>
+      <p>Ending balance, where \(r\) is the annual return as a decimal and \(t\) is the number of years:</p>
+      <p class="math">\[ A = P \cdot \frac{\left(1 + \frac{r}{12}\right)^{12t} - 1}{\frac{r}{12}} \]</p>
+      <p>Total contributed:</p>
+      <p class="math">\[ \text{Total} = P \times 12t \]</p>
+      <p>Interest earned:</p>
+      <p class="math">\[ \text{Interest} = A - \text{Total} \]</p>
     </details>
   </section>
 </main>
