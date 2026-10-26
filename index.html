@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MAT 1023 Compound Interest Calculator</title>
+<style>
+  :root {
+    --bg: #f3f6f4;
+    --panel: #ffffff;
+    --ink: #17241f;
+    --muted: #55665f;
+    --line: #cdd8d2;
+    --accent: #1f6f54;
+    --accent-soft: #e2f0ea;
+    --focus: #2b7fd1;
+    --in-bg: #dcf3e3;
+    --in-line: #3c9a5f;
+    --in-ink: #145a2e;
+    --out: #b3261e;
+    --out-bg: #fbe4e2;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121815;
+      --panel: #1b2420;
+      --ink: #e7efeb;
+      --muted: #9fb1a9;
+      --line: #33433c;
+      --accent: #6fcfa6;
+      --accent-soft: #20352c;
+      --focus: #7ab8f5;
+      --in-bg: #1d3826;
+      --in-line: #4fb874;
+      --in-ink: #b9f0cc;
+      --out: #ff8a80;
+      --out-bg: #3a1f1d;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    padding: env(safe-area-inset-top, 0px) 1rem env(safe-area-inset-bottom, 0px);
+  }
+  main { max-width: 640px; margin: 2rem auto 3rem; }
+  h1 { font-size: 1.6rem; margin: 0 0 0.25rem; letter-spacing: -0.01em; }
+  .intro { color: var(--muted); margin: 0 0 1.5rem; }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  h2 { font-size: 1.05rem; margin: 0 0 1rem; }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 11rem;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .row:last-child { border-bottom: none; }
+  label { font-weight: 600; }
+  .hint { display: block; font-weight: 400; font-size: 0.85rem; color: var(--muted); }
+  .field {
+    display: flex;
+    align-items: center;
+    border: 2px solid var(--in-line);
+    border-radius: 6px;
+    background: var(--in-bg);
+    padding: 0 0.6rem;
+  }
+  .field:focus-within { outline: 2px solid var(--focus); outline-offset: 1px; }
+  .field span { color: var(--muted); }
+  input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--in-ink);
+    font: inherit;
+    font-weight: 600;
+    font-size: 1.05rem;
+    padding: 0.5rem 0.3rem;
+    text-align: right;
+    outline: none;
+  }
+  .value { text-align: right; font-size: 1.05rem; font-weight: 600; color: var(--out); font-variant-numeric: tabular-nums; }
+  .big {
+    background: var(--out-bg);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    text-align: center;
+  }
+  .big .amount {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--out);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+  }
+  .error { color: var(--ink); font-weight: 600; font-size: 0.9rem; min-height: 1.2em; margin: 0.5rem 0 0; }
+  details { color: var(--muted); font-size: 0.92rem; }
+  summary { cursor: pointer; color: var(--ink); font-weight: 600; }
+  code { font-size: 0.95em; }
+  @media (max-width: 480px) {
+    .row { grid-template-columns: 1fr; gap: 0.35rem; }
+    .value { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Compound Interest Calculator</h1>
+  <p class="intro">Fill in the green boxes. The red values are calculated for you and update as you type.</p>
+
+  <section class="panel">
+    <h2>Your inputs</h2>
+    <div class="row">
+      <label for="income">Annual income</label>
+      <div class="field"><span>$</span><input id="income" type="number" inputmode="decimal" min="0" step="any" value="50000"></div>
+    </div>
+    <div class="row">
+      <label for="rate">Savings rate<span class="hint">Percent of income you save</span></label>
+      <div class="field"><input id="rate" type="number" inputmode="decimal" min="0" step="any" value="5"><span>%</span></div>
+    </div>
+    <div class="row">
+      <label for="ret">Annual return<span class="hint">Compounded monthly</span></label>
+      <div class="field"><input id="ret" type="number" inputmode="decimal" step="any" value="10.13"><span>%</span></div>
+    </div>
+    <div class="row">
+      <label for="years">Years</label>
+      <div class="field"><input id="years" type="number" inputmode="numeric" min="0" step="1" value="45"></div>
+    </div>
+    <p class="error" id="error" role="alert"></p>
+  </section>
+
+  <section class="panel" aria-live="polite">
+    <h2>Results</h2>
+    <div class="big">
+      <div>Ending balance</div>
+      <div class="amount" id="fv">$0</div>
+    </div>
+    <div class="row"><span>Monthly savings</span><span class="value" id="monthly">$0.00</span></div>
+    <div class="row"><span>Total amount you contributed</span><span class="value" id="contrib">$0</span></div>
+    <div class="row"><span>Amount earned from interest</span><span class="value" id="interest">$0</span></div>
+  </section>
+
+  <section class="panel">
+    <details>
+      <summary>How these are calculated</summary>
+      <p>Monthly savings = annual income × savings rate ÷ 12</p>
+      <p>Ending balance = monthly savings × [(1 + r/12)<sup>12t</sup> − 1] ÷ (r/12), where r is the annual return as a decimal and t is the number of years.</p>
+      <p>Total contributed = monthly savings × 12 × years</p>
+      <p>Interest earned = ending balance − total contributed</p>
+    </details>
+  </section>
+</main>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const money0 = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  const money2 = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  function calculate() {
+    const income = parseFloat($("income").value);
+    const rate = parseFloat($("rate").value) / 100;
+    const ret = parseFloat($("ret").value) / 100;
+    const years = parseFloat($("years").value);
+
+    if ([income, rate, ret, years].some(v => isNaN(v))) {
+      $("error").textContent = "Fill in every box with a number to see results.";
+      return;
+    }
+    if (income < 0 || rate < 0 || years < 0) {
+      $("error").textContent = "Income, savings rate, and years cannot be negative.";
+      return;
+    }
+    $("error").textContent = "";
+
+    const monthly = income * rate / 12;
+    const i = ret / 12;
+    const n = years * 12;
+    const fv = i === 0 ? monthly * n : monthly * (Math.pow(1 + i, n) - 1) / i;
+    const contributed = monthly * n;
+
+    $("monthly").textContent = money2.format(monthly);
+    $("fv").textContent = money0.format(fv);
+    $("contrib").textContent = money0.format(contributed);
+    $("interest").textContent = money0.format(fv - contributed);
+  }
+
+  ["income", "rate", "ret", "years"].forEach(id => $(id).addEventListener("input", calculate));
+  calculate();
+</script>
+</body>
+</html>
